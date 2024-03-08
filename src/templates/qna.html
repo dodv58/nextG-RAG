@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="post">
+        <label for="title">Question</label>
+        <br>
+        <input type="text" name="question"
+               placeholder=""
+               value=""></input>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+
+    <h1>Stored Files</h1>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Path</th>
+            <th>Chroma Directory</th>
+            <th>Embedding Model</th>
+          </tr>
+            {% for file in files %}
+                <tr>
+                    {% for attr in file %}
+                        <td>
+                            {{ attr }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+{% endblock %}
