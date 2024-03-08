@@ -19,7 +19,7 @@ def document_embedding(filepath, model=None):
 
     chroma_dir = str(uuid.uuid4())
     vectorstore = Chroma.from_documents(documents=all_splits,
-                                        embedding=LlamaCppEmbeddings(model_path=model),
+                                        embedding=LlamaCppEmbeddings(model_path=f"./models/{model}"),
                                         persist_directory=f"./chromadb/{chroma_dir}")
     return chroma_dir
 

@@ -32,9 +32,20 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def insert_file(name, path, chroma_dir, embedding_model):
+    db = get_db()
+    db_cursor = db.cursor()
+    db_cursor.execute(f"insert into files values ('{name}', '{path}', '{chroma_dir}', '{embedding_model}')")
+    db.commit()
+
+def get_files():
+    db_cursor = get_db().cursor()
+    files = db_cursor.execute("select * from files limit 100").fetchall()
+    return files
+
 @app.route('/files', methods=['GET', 'POST'])
 def upload_file():
-    cur = get_db().cursor()
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -51,10 +62,11 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             chroma_dir = document_embedding(filepath, LLM_MODEL)
-            cur.execute(f"insert into files values ('{file.filename}', '{filename}', '{chroma_dir}', '{LLM_MODEL}')")
+            insert_file(file.filename, filename, chroma_dir, LLM_MODEL)
+
             return "done"
     else:
-        files = cur.execute("select * from files limit 100").fetchall()
+        files = get_files()
         for f in files:
             f = [f"<td>{attr}</td>" for attr in f]
         txt = [f"<tr>{''.join(f)}</tr>" for f in files]
