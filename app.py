@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, request, redirect, url_for
+from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
@@ -67,9 +67,20 @@ def upload_file():
             return "done"
     else:
         files = get_files()
+        # txt = ''
+        # for f in files:
+        #     txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "</tr>"
+
+        return render_template('upload.html', files=files)
+@app.route('/qna', methods=['GET', 'POST'])
+def question_answering():
+    if request.method == 'POST':
+        pass
+    else:
+        files = get_files()
         txt = ''
         for f in files:
-            txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "/tr"
+            txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "</tr>"
 
         return f'''
         <!doctype html>
@@ -88,7 +99,7 @@ def upload_file():
           <input type=file name=file>
           <input type=submit value=Upload>
         </form>
-        
+
         <h1>Stored Files</h1>
         <table>
           <tr>

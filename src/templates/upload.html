@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} Upload documents {% endblock %}</h1>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+
+    <h1>Stored Files</h1>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Path</th>
+            <th>Chroma Directory</th>
+            <th>Embedding Model</th>
+          </tr>
+            {% for file in files %}
+                <tr>
+                    {% for attr in file %}
+                        <td>
+                            {{ attr }}
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+
+{% endblock %}
