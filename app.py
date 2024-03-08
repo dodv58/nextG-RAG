@@ -62,6 +62,15 @@ def upload_file():
         return f'''
         <!doctype html>
         <title>Upload new File</title>
+        <head>
+        <style>
+        table, th, td {{
+          border: 1px solid black;
+          border-collapse: collapse;
+        }}
+        </style>
+        </head>
+        <body>
         <h1>Upload new File</h1>
         <form method=post enctype=multipart/form-data>
           <input type=file name=file>
@@ -78,6 +87,7 @@ def upload_file():
           </tr>
           {txt}
         </table>
+        </body>
         '''
 
 
