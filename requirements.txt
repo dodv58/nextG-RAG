@@ -1,0 +1,9 @@
+pypdf
+langchain 
+langchain-community 
+langchainhub 
+gpt4all 
+chromadb
+llama-cpp-python
+pysqlite3-binary
+flask
