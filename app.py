@@ -83,14 +83,12 @@ def upload_file():
 def question_answering():
     if request.method == 'POST':
         question = request.form.get('question')
-        file = get_file(request.form.get('file'))
-        return qna(LLM_MODEL_PATH, file, question)
+        files = get_files()
+        target_file = get_file(request.form.get('file'))
+        answer = qna(LLM_MODEL_PATH, target_file, question)
+        return render_template("qna.html", answer=answer, files=files)
     else:
         files = get_files()
-        txt = ''
-        for f in files:
-            txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "</tr>"
-
         return render_template("qna.html", files=files)
 
 
