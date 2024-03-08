@@ -6,7 +6,7 @@ from flask import g
 from src import document_embedding
 import time
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='./src/templates')
 UPLOAD_FOLDER = app.root_path + '/uploaded_files'
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -82,36 +82,7 @@ def question_answering():
         for f in files:
             txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "</tr>"
 
-        return f'''
-        <!doctype html>
-        <title>Upload new File</title>
-        <head>
-        <style>
-        table, th, td {{
-          border: 1px solid black;
-          border-collapse: collapse;
-        }}
-        </style>
-        </head>
-        <body>
-        <h1>Upload new File</h1>
-        <form method=post enctype=multipart/form-data>
-          <input type=file name=file>
-          <input type=submit value=Upload>
-        </form>
-
-        <h1>Stored Files</h1>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Path</th>
-            <th>Chroma Directory</th>
-            <th>Embedding Model</th>
-          </tr>
-          {txt}
-        </table>
-        </body>
-        '''
+        return render_template("qna.html", files=files)
 
 
 if __name__ == '__main__':
