@@ -67,9 +67,9 @@ def upload_file():
             return "done"
     else:
         files = get_files()
+        txt = ''
         for f in files:
-            f = [f"<td>{attr}</td>" for attr in f]
-        txt = [f"<tr>{''.join(f)}</tr>" for f in files]
+            txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "/tr"
 
         return f'''
         <!doctype html>
