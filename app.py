@@ -3,7 +3,8 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
-from src import document_embedding
+
+from src import document_embedding, qna
 import time
 
 app = Flask(__name__, template_folder='./src/templates')
@@ -12,6 +13,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE = 'nextg-llm.db'
 LLM_MODEL = 'llama-2-7b-chat.Q4_K_M.gguf'
+LLM_MODEL_PATH = app.root_path + '/models' + LLM_MODEL
 VECTOR_DB_PATH = app.root_path + '/vector_db'
 
 def get_db():
@@ -42,6 +44,11 @@ def get_files():
     db_cursor = get_db().cursor()
     files = db_cursor.execute("select * from files limit 100").fetchall()
     return files
+
+def get_file(name):
+    db_cursor = get_db().cursor()
+    file = db_cursor.execute(f"select * from files where name = '{name}'").fetchone()
+    return file
 
 @app.route('/files', methods=['GET', 'POST'])
 def upload_file():
@@ -75,7 +82,9 @@ def upload_file():
 @app.route('/qna', methods=['GET', 'POST'])
 def question_answering():
     if request.method == 'POST':
-        pass
+        question = request.form.get('question')
+        file = get_file(request.form.get('file'))
+        return qna(LLM_MODEL_PATH, file, question)
     else:
         files = get_files()
         txt = ''

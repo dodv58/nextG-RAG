@@ -2,32 +2,25 @@
 
 {% block content %}
     <form method="post">
+        <label for="title">Files</label>
+        <br>
+        {% for file in files %}
+            <input type="checkbox" name="file" id={{ file[0] }} value={{ file[0] }}>
+            <label for={{ file[0] }}> {{ file[0] }} </label><br>
+        {% endfor%}
+        <br>
         <label for="title">Question</label>
         <br>
-        <input type="text" name="question"
-               placeholder=""
-               value=""></input>
+        <textarea name="question"
+                  placeholder=""
+                  rows="15"
+                  cols="60"></textarea>
         <br>
         <button type="submit">Submit</button>
     </form>
 
-    <h1>Stored Files</h1>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Path</th>
-            <th>Chroma Directory</th>
-            <th>Embedding Model</th>
-          </tr>
-            {% for file in files %}
-                <tr>
-                    {% for attr in file %}
-                        <td>
-                            {{ attr }}
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </table>
+    <br>
+    <h3>answer</h3>
+    <p>{{ answer }}</p>
 
 {% endblock %}
