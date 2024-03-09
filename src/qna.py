@@ -12,10 +12,21 @@ def format_docs(docs):
 def qna(model, file, question):
     vectorstore = Chroma(persist_directory=file[2], embedding_function=LlamaCppEmbeddings(model_path=model),)
     # rag_prompt_llama = hub.pull("rlm/rag-prompt-llama")
-    # "If you don't know the answer, just say that you don't know. "
-    rag_prompt_llama = PromptTemplate.from_template('[INST]<<SYS>> You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If the context does not provide the answer to the question, the assistant will say, "I am sorry, but I do not know the answer to that question". The assistant will not invent anything that is not drawn directly from the context and keep the answer concise.<</SYS>> \nQuestion: {question} \nContext: {context} \nAnswer: [/INST]')
-    rag_prompt_llama = HumanMessagePromptTemplate.from_template(rag_prompt_llama.template)
-    rag_prompt_llama = ChatPromptTemplate.from_messages([rag_prompt_llama])
+
+    # rag_prompt_llama = PromptTemplate.from_template('[INST]<<SYS>> You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If the context does not provide the answer to the question, the assistant will say, "I am sorry, but I do not know the answer to that question". The assistant will not invent anything that is not drawn directly from the context and keep the answer concise.<</SYS>> \nQuestion: {question} \nContext: {context} \nAnswer: [/INST]')
+    # rag_prompt_llama = HumanMessagePromptTemplate.from_template(rag_prompt_llama.template)
+    # rag_prompt_llama = ChatPromptTemplate.from_messages([rag_prompt_llama])
+
+    template = """[INST]<<SYS>> Use the following pieces of context to answer the question at the end. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>> 
+    
+    Question: {question} 
+    
+    Context: {context} 
+    
+    Answer: [/INST]
+    """
+    rag_prompt_llama = PromptTemplate.from_template(template)
+
     llm = LlamaCpp(
         model_path=model,
         temperature=0,
