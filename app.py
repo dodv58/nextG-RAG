@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
 
-from src import document_embedding, qna
+from src import document_embedding, qna, embedding
 import time
 
 app = Flask(__name__, template_folder='./src/templates')
@@ -68,8 +68,8 @@ def upload_file():
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
-            chroma_dir = document_embedding(filepath, LLM_MODEL)
-            insert_file(file.filename, filename, chroma_dir, LLM_MODEL)
+            chroma_dir = document_embedding(filepath, embedding)
+            insert_file(file.filename, filename, chroma_dir, str(embedding))
 
             return "done"
     else:
@@ -85,7 +85,7 @@ def question_answering():
         question = request.form.get('question')
         files = get_files()
         target_file = get_file(request.form.get('file'))
-        answer = qna(LLM_MODEL_PATH, target_file, question)
+        answer = qna(LLM_MODEL_PATH, target_file, embedding, question)
         return render_template("qna.html", answer=answer, files=files)
     else:
         files = get_files()

@@ -3,13 +3,13 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain import hub
 from langchain_core.runnables import RunnablePassthrough, RunnablePick
 from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import LlamaCppEmbeddings
+from langchain_community.embeddings import LlamaCppEmbeddings, HuggingFaceEmbeddings
 from langchain.prompts import PromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
 
 def format_docs(docs):
     return "\n\n".join(doc.page_content for doc in docs)
 
-def qna(model, file, question):
+def qna(model, file, embedding, question):
     llm = LlamaCpp(
         model_path=model,
         temperature=0,
@@ -21,7 +21,7 @@ def qna(model, file, question):
     )
 
     if file:
-        vectorstore = Chroma(persist_directory=file[2], embedding_function=LlamaCppEmbeddings(model_path=model),)
+        vectorstore = Chroma(persist_directory=file[2], embedding_function=embedding,)
 
         template = """[INST]<<SYS>> Use the following pieces of context to answer the question at the end. If the provided context does not contain the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>>
     
