@@ -12,7 +12,7 @@ UPLOAD_FOLDER = app.root_path + '/uploaded_files'
 ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE = 'nextg-llm.db'
-LLM_MODEL = 'llama-2-7b-chat.Q4_K_M.gguf'
+LLM_MODEL = 'llama-2-13b-chat.Q6_K.gguf'
 LLM_MODEL_PATH = app.root_path + '/models/' + LLM_MODEL
 VECTOR_DB_PATH = app.root_path + '/vector_db'
 
