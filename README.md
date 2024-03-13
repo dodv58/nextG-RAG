@@ -4,7 +4,7 @@
 
 - Python version >= 3.9
 
-- A Llama2 model (https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) 
+- A Llama2 model in src/models/ (could be downloaded from https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) 
 
 ### Using virtual environment:
 ```
