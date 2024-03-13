@@ -69,7 +69,7 @@ def upload_file():
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
             chroma_dir = document_embedding(filepath, embedding)
-            insert_file(file.filename, filename, chroma_dir, str(embedding))
+            insert_file(file.filename, filename, chroma_dir, embedding.model_name)
 
             return "done"
     else:
