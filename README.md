@@ -4,7 +4,7 @@
 
 - Python version >= 3.9
 
-- A Llama2 model in src/models/ (could be downloaded from https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) 
+- A Llama2 model in models/ (could be downloaded from https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) and change LLM_MODEL variable to the model name.
 
 ### Using virtual environment:
 ```
@@ -17,6 +17,8 @@ source venv/bin/activate
 
 ## Run app
 `python app.py`
+
+## Routes 
 
 ### Upload files
 `127.0.0.1:5000/files`
