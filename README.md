@@ -3,8 +3,8 @@
 ## Requirements
 
 - Python version >= 3.9
-
-- A Llama2 model in models/ (could be downloaded from https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) and change LLM_MODEL variable to the model name.
+- Download a Llama2 model and places in models/ (could be downloaded from https://huggingface.co/TheBloke/Llama-2-13B-chat-GGUF) 
+- change LLM_MODEL variable in app.py to the model name.
 
 ### Using virtual environment:
 ```
