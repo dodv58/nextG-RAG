@@ -7,6 +7,7 @@ from .common import format_docs
 
 class LLM(object):
     def init_llm(self, app, embedding):
+        print("Initializing LLM")
         self.embedding = embedding
         if app.config['DEVICE'] == 'cuda':
             self.llm = LlamaCpp(
@@ -22,7 +23,7 @@ class LLM(object):
             )
         else:
             self.llm = LlamaCpp(
-                model_path=app.config['LLM_MODEL'],
+                model_path=app.config['LLM_MODEL_PATH'],
                 temperature=0,
                 max_tokens=4096,
                 top_p=1,

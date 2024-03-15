@@ -8,9 +8,11 @@ from .common import format_docs
 
 class Embedding(object):
     def init_embedding(self, app):
+        print("Initializing embedding")
         # return LlamaCppEmbeddings(model_path=f"./models/{model}")
         self.chromadb = app.config['VECTOR_DB_PATH']
         self.embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+        self.model_name = self.embedding.model_name
 
     def document_embedding(self, filepath):
         if filepath.rsplit('.', 1)[1].lower() == 'pdf':

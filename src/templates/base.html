@@ -12,8 +12,9 @@
 </head>
 <body>
     <div class="topnav">
-      <a href="">Upload File</a>
-      <a href="#contact">Q&A</a>
+        {% for item in nav.top %}
+            <a class="{{ 'active' if item.is_active else '' }}" href="{{ item.url }}">{{ item.label }}</a>
+        {% endfor %}
     </div>
     <hr>
     <div class="content">
