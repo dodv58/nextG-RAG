@@ -14,6 +14,7 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE = 'nextg-llm.db'
 LLM_MODEL = 'llama-2-13b-chat.Q6_K.gguf'
+# LLM_MODEL = 'llama-2-7b-chat.Q4_K_M.gguf'
 LLM_MODEL_PATH = app.root_path + '/models/' + LLM_MODEL
 VECTOR_DB_PATH = app.root_path + '/chromadb'
 
@@ -96,7 +97,12 @@ if __name__ == '__main__':
     app.config['LLM_MODEL'] = LLM_MODEL
     app.config['LLM_MODEL_PATH'] = LLM_MODEL_PATH
     app.config['VECTOR_DB_PATH'] = VECTOR_DB_PATH
-    app.config['DEVICE']= torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if torch.cuda.is_available():
+        app.config['DEVICE'] = torch.device('cuda')
+    elif torch.backends.mps.is_available():
+        app.config['DEVICE'] = torch.device('mps')
+    else:
+        app.config['DEVICE'] = torch.device('cpu')
 
     init_app(app)
 

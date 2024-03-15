@@ -9,7 +9,7 @@ class LLM(object):
     def init_llm(self, app, embedding):
         print("Initializing LLM")
         self.embedding = embedding
-        if app.config['DEVICE'] == 'cuda':
+        if app.config['DEVICE'].type == 'cuda':
             self.llm = LlamaCpp(
                 model_path=app.config['LLM_MODEL_PATH'],
                 temperature=0.1,
@@ -19,6 +19,17 @@ class LLM(object):
                 n_batch=512,
                 # callback_manager=callback_manager,
                 n_ctx=2048,
+                verbose=False,  # Verbose is required to pass to the callback manager
+            )
+        elif app.config['DEVICE'].type == 'mps':
+            self.llm = LlamaCpp(
+                model_path=app.config['LLM_MODEL_PATH'],
+                n_gpu_layers=-1,
+                n_batch=64,
+                f16_kv=True,  # MUST set to True, otherwise you will run into problem after a couple of calls
+                n_ctx=2048,
+                temperature=0,
+                max_tokens=4096,
                 verbose=False,  # Verbose is required to pass to the callback manager
             )
         else:
