@@ -73,7 +73,7 @@ def upload_file():
             file.save(filepath)
             chroma_dir = embedding.document_embedding(filepath)
             insert_file(file.filename, filename, chroma_dir, embedding.model_name)
-            return "done"
+            return redirect(url_for('upload_file'))
     else:
         files = get_files()
         return render_template('upload.html', files=files)
@@ -99,5 +99,7 @@ if __name__ == '__main__':
     app.config['DEVICE']= torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     init_app(app)
+
     app.run(host="0.0.0.0")
+    # app.run(host="0.0.0.0", port=8000)
 
