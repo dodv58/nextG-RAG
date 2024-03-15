@@ -11,11 +11,6 @@
     </style>
 </head>
 <body>
-    <div class="topnav">
-        {% for item in nav.top %}
-            <a class="{{ 'active' if item.is_active else '' }}" href="{{ item.url }}">{{ item.label }}</a>
-        {% endfor %}
-    </div>
     <hr>
     <div class="content">
         {% block content %} {% endblock %}

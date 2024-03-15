@@ -4,7 +4,6 @@ from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
 import torch
-from flask_navigation import Navigation
 
 from src import llm, embedding, init_app
 import time
@@ -18,7 +17,6 @@ LLM_MODEL = 'llama-2-13b-chat.Q6_K.gguf'
 LLM_MODEL_PATH = app.root_path + '/models/' + LLM_MODEL
 VECTOR_DB_PATH = app.root_path + '/chromadb'
 
-nav = Navigation(app)
 
 
 def get_db():
@@ -101,9 +99,5 @@ if __name__ == '__main__':
     app.config['DEVICE']= torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     init_app(app)
-    nav.Bar('top', [
-        nav.Item('Files', "files"),
-        nav.Item('Q&A', "qna")
-    ])
     app.run(host="0.0.0.0")
 
