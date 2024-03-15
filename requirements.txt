@@ -8,3 +8,4 @@ llama-cpp-python
 pysqlite3-binary
 flask
 sentence-transformers
+pyyaml

@@ -1,5 +1,9 @@
-from .embedding import document_embedding, init_embedding
-from .qna import qna
+from .embedding import Embedding
+from .qna import LLM
 
-embedding = init_embedding()
-print(embedding.model_name)
+llm = LLM()
+embedding = Embedding()
+
+def init_app(app):
+    embedding.init_embedding(app)
+    llm.init_llm(app, embedding)

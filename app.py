@@ -3,8 +3,9 @@ from flask import Flask, flash, request, redirect, url_for, render_template
 from werkzeug.utils import secure_filename
 import sqlite3
 from flask import g
+import torch
 
-from src import document_embedding, qna, embedding
+from src import llm, embedding, init_app
 import time
 
 app = Flask(__name__, template_folder='./src/templates')
@@ -14,7 +15,9 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 DATABASE = 'nextg-llm.db'
 LLM_MODEL = 'llama-2-13b-chat.Q6_K.gguf'
 LLM_MODEL_PATH = app.root_path + '/models/' + LLM_MODEL
-VECTOR_DB_PATH = app.root_path + '/vector_db'
+VECTOR_DB_PATH = app.root_path + '/chromadb'
+
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -68,29 +71,33 @@ def upload_file():
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
-            chroma_dir = document_embedding(filepath, embedding)
+            chroma_dir = embedding.document_embedding(filepath)
             insert_file(file.filename, filename, chroma_dir, embedding.model_name)
-
             return "done"
     else:
         files = get_files()
-        # txt = ''
-        # for f in files:
-        #     txt += "<tr>" + "".join([f"<td>{attr}</td>" for attr in f]) + "</tr>"
-
         return render_template('upload.html', files=files)
+
 @app.route('/qna', methods=['GET', 'POST'])
 def question_answering():
     if request.method == 'POST':
         question = request.form.get('question')
         files = get_files()
         target_file = get_file(request.form.get('file'))
-        answer = qna(LLM_MODEL_PATH, target_file, embedding, question)
+        answer = llm.qna(target_file, question)
         return render_template("qna.html", answer=answer, files=files)
     else:
         files = get_files()
-        return render_template("qna.html", files=files)
+        return render_template("qna.html", files=files, device=app.config['DEVICE'])
 
 
 if __name__ == '__main__':
-   app.run(host="0.0.0.0")
+    app.config['DATABASE'] = DATABASE
+    app.config['LLM_MODEL'] = LLM_MODEL
+    app.config['LLM_MODEL_PATH'] = LLM_MODEL_PATH
+    app.config['VECTOR_DB_PATH'] = VECTOR_DB_PATH
+    app.config['DEVICE']= torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    init_app(app)
+    app.run(host="0.0.0.0")
+
