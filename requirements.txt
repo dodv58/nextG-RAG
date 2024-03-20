@@ -5,6 +5,12 @@ langchainhub
 gpt4all 
 chromadb
 llama-cpp-python
-pysqlite3-binary
+#pysqlite3-binary
 flask
 sentence-transformers
+peft==0.4.0
+bitsandbytes==0.40.2
+transformers==4.31.0
+trl==0.4.7
+accelerate
+datasets
