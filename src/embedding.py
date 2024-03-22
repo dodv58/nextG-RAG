@@ -11,10 +11,11 @@ class Embedding(object):
         print("Initializing embedding")
         self.lang = "vi" if "vietnamese" in app.config["LLM_MODEL"] else "en"
         self.chromadb = app.config['VECTOR_DB_PATH']
-        if self.lang == "vi":
-            self.embedding = LlamaCppEmbeddings(model_path=app.config["LLM_MODEL_PATH"])
-        else:
-            self.embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+        # if self.lang == "vi":
+        #     self.embedding = LlamaCppEmbeddings(model_path=app.config["LLM_MODEL_PATH"])
+        #     self.model_name = app.config["LLM_MODEL"]
+        # else:
+        self.embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
         self.model_name = self.embedding.model_name
 
     def document_embedding(self, filepath):
