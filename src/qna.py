@@ -5,10 +5,46 @@ from langchain_community.vectorstores import Chroma
 from langchain.prompts import PromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
 from .common import format_docs
 
+template = {
+    "rag": {
+        "en": """[INST]<<SYS>> Use the following pieces of context to answer the question at the end. If the provided context does not contain the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>>
+        
+    Question: {question}
+        
+    Context: {context}
+        
+    Answer: [/INST]
+    """,
+        "vi": """[INST]<<SYS>> Sử dụng các phần ngữ cảnh sau đây để trả lời câu hỏi ở cuối. Nếu ngữ cảnh được cung cấp không chứa câu trả lời, bạn chỉ cần nói rằng bạn không biết, đừng cố bịa ra câu trả lời. Sử dụng tối đa ba câu và giữ câu trả lời ngắn gọn nhất có thể.<</SYS>>
+
+                Câu hỏi: {question}
+
+                Ngữ cảnh: {context}
+
+                Trả lời: [/INST]
+                """
+    },
+    "general": {
+        "en": """[INST]<<SYS>> Try to answer this question. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>>
+    
+    Question: {question}
+    
+    Answer: [/INST]
+    """,
+        "vi": """[INST]<<SYS>> Hãy cố gắng trả lời câu hỏi này. Nếu không biết câu trả lời, bạn chỉ cần nói rằng bạn không biết, đừng cố bịa ra câu trả lời. Sử dụng tối đa ba câu và giữ câu trả lời ngắn gọn nhất có thể.<</SYS>>
+
+                Câu hỏi: {question}
+
+                Trả lời: [/INST]
+                """
+    }
+}
+
 class LLM(object):
     def init_llm(self, app, embedding):
         print("Initializing LLM")
         self.embedding = embedding
+        self.lang = "vi" if "vietnamese" in app.config["LLM_MODEL"] else "en"
         if app.config['DEVICE'].type == 'cuda':
             self.llm = LlamaCpp(
                 model_path=app.config['LLM_MODEL_PATH'],
@@ -48,15 +84,7 @@ class LLM(object):
         if file:
             vectorstore = Chroma(persist_directory=file[2], embedding_function=self.embedding.embedding,)
 
-            template = """[INST]<<SYS>> Use the following pieces of context to answer the question at the end. If the provided context does not contain the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>>
-        
-    Question: {question}
-        
-    Context: {context}
-        
-    Answer: [/INST]
-    """
-            rag_prompt_llama = PromptTemplate.from_template(template)
+            rag_prompt_llama = PromptTemplate.from_template(template["rag"][self.lang])
             # rag_prompt_llama = hub.pull("rlm/rag-prompt-llama")
 
             # Chain
@@ -68,13 +96,7 @@ class LLM(object):
                     | StrOutputParser()
             )
         else:
-            template = """[INST]<<SYS>> Try to answer this question. If you don't know the answer, just say that you don't know, don't try to make up an answer. Use three sentences maximum and keep the answer as concise as possible.<</SYS>>
-    
-    Question: {question}
-    
-    Answer: [/INST]
-    """
-            rag_prompt_llama = PromptTemplate.from_template(template)
+            rag_prompt_llama = PromptTemplate.from_template(template['general'][self.lang])
             # rag_prompt_llama = hub.pull("rlm/rag-prompt-llama")
 
             # Chain
