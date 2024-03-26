@@ -17,14 +17,12 @@ from trl import SFTTrainer
 base_model = "meta-llama/Llama-2-7b-chat-hf"
 
 # New instruction dataset
+# https://huggingface.co/datasets/mlabonne/guanaco-llama2-1k
 guanaco_dataset = "mlabonne/guanaco-llama2-1k"
 dataset = load_dataset(guanaco_dataset, split="train")
 # Fine-tuned model
 new_model = "llama-2-7b-chat-fine-tuned"
 
-# Model and tokenizer names
-base_model_name = "NousResearch/Llama-2-7b-chat-hf"
-refined_model = "llama-2-7b-mlabonne-enhanced" #You can give it your own name
 
 # Tokenizer
 tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
@@ -97,6 +95,6 @@ trainer.model.save_pretrained(new_model)
 
 # Generate Text
 query = "How do I use the OpenAI API?"
-text_gen = pipeline(task="text-generation", model=refined_model, tokenizer=tokenizer, max_length=200)
+text_gen = pipeline(task="text-generation", model=new_model, tokenizer=tokenizer, max_length=200)
 output = text_gen(f"<s>[INST] {query} [/INST]")
 print(output[0]['generated_text'])
