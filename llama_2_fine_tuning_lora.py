@@ -1,5 +1,4 @@
-# https://www.datacamp.com/tutorial/fine-tuning-llama-2
-
+import os
 import torch
 from datasets import load_dataset
 from transformers import (
@@ -7,37 +6,32 @@ from transformers import (
     AutoTokenizer,
     BitsAndBytesConfig,
     TrainingArguments,
-    pipeline
+    pipeline,
+    logging,
 )
 from peft import LoraConfig
 from trl import SFTTrainer
-
 
 # Model from Hugging Face hub
 base_model = "meta-llama/Llama-2-7b-chat-hf"
 
 # New instruction dataset
-# https://huggingface.co/datasets/mlabonne/guanaco-llama2-1k
 guanaco_dataset = "mlabonne/guanaco-llama2-1k"
-dataset = load_dataset(guanaco_dataset, split="train")
+
 # Fine-tuned model
-new_model = "llama-2-7b-chat-fine-tuned"
+new_model = "llama-2-7b-chat-guanaco"
 
+dataset = load_dataset(guanaco_dataset, split="train")
 
-# Tokenizer
-tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
-tokenizer.pad_token = tokenizer.eos_token
-tokenizer.padding_side = "right"
+compute_dtype = getattr(torch, "float16")
 
-# Quantization Config
 quant_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
-    bnb_4bit_compute_dtype=torch.float16,
-    bnb_4bit_use_double_quant=False
+    bnb_4bit_compute_dtype=compute_dtype,
+    bnb_4bit_use_double_quant=False,
 )
 
-# Model
 model = AutoModelForCausalLM.from_pretrained(
     base_model,
     quantization_config=quant_config,
@@ -46,7 +40,10 @@ model = AutoModelForCausalLM.from_pretrained(
 model.config.use_cache = False
 model.config.pretraining_tp = 1
 
-# LoRA Config
+tokenizer = AutoTokenizer.from_pretrained(base_model, trust_remote_code=True)
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.padding_side = "right"
+
 peft_params = LoraConfig(
     lora_alpha=16,
     lora_dropout=0.1,
@@ -55,7 +52,7 @@ peft_params = LoraConfig(
     task_type="CAUSAL_LM",
 )
 
-# Training Params
+
 training_params = TrainingArguments(
     output_dir="./results",
     num_train_epochs=1,
@@ -75,7 +72,7 @@ training_params = TrainingArguments(
     lr_scheduler_type="constant",
     report_to="tensorboard"
 )
-# Trainer
+
 trainer = SFTTrainer(
     model=model,
     train_dataset=dataset,
@@ -87,14 +84,20 @@ trainer = SFTTrainer(
     packing=False,
 )
 
+prompt = "Who is Leonardo Da Vinci?"
+pipe = pipeline(task="text-generation", model=model, tokenizer=tokenizer, max_length=200)
+result = pipe(f"<s>[INST] {prompt} [/INST]")
+print(result[0]['generated_text'])
+
 # Training
 trainer.train()
 
-# Save Model
 trainer.model.save_pretrained(new_model)
+trainer.tokenizer.save_pretrained(new_model)
 
-# Generate Text
-query = "How do I use the OpenAI API?"
-text_gen = pipeline(task="text-generation", model=new_model, tokenizer=tokenizer, max_length=200)
-output = text_gen(f"<s>[INST] {query} [/INST]")
-print(output[0]['generated_text'])
+# logging.set_verbosity(logging.CRITICAL)
+
+prompt = "Who is Leonardo Da Vinci?"
+pipe = pipeline(task="text-generation", model=model, tokenizer=tokenizer, max_length=200)
+result = pipe(f"<s>[INST] {prompt} [/INST]")
+print(result[0]['generated_text'])
