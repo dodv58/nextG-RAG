@@ -11,17 +11,23 @@ from transformers import (
 )
 from peft import LoraConfig
 from trl import SFTTrainer
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-m', help='model', required=True)
+parser.add_argument('-d', help='dataset', required=True)
+args = parser.parse_args()
 
 # Model from Hugging Face hub
-base_model = "meta-llama/Llama-2-7b-chat-hf"
+base_model = args.m
 
 # New instruction dataset
 guanaco_dataset = "mlabonne/guanaco-llama2-1k"
 
 # Fine-tuned model
-new_model = "llama-2-7b-chat-guanaco"
+new_model = "llama-2-7b-chat-new"
 
-dataset = load_dataset(guanaco_dataset, split="train")
+dataset = load_dataset("parquet", data_files=args.d, split="train")
 
 compute_dtype = getattr(torch, "float16")
 
@@ -83,11 +89,6 @@ trainer = SFTTrainer(
     args=training_params,
     packing=False,
 )
-
-prompt = "Who is Leonardo Da Vinci?"
-pipe = pipeline(task="text-generation", model=model, tokenizer=tokenizer, max_length=200)
-result = pipe(f"<s>[INST] {prompt} [/INST]")
-print(result[0]['generated_text'])
 
 # Training
 trainer.train()
